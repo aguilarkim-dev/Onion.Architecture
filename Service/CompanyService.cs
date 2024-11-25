@@ -38,6 +38,34 @@ namespace Service
             return companyToReturn;
         }
 
+        public (IEnumerable<CompanyDto> companies, string ids) CreateCompanyCollection(IEnumerable<CompanyForCreationDto> companyCollection)
+        {
+            if (companyCollection is null)
+                throw new CompanyCollectionBadRequest();
+
+            var companyEntities = _mapper.Map<IEnumerable<Company>>(companyCollection);
+            foreach (var company in companyEntities)
+            {
+                _repository.Company.CreateCompany(company);
+            }
+            _repository.Save();
+
+            var companyCollectionToReturn =  _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+            var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id));
+
+            return (companies: companyCollectionToReturn, ids);
+        }
+
+        public void DeleteCompany(Guid companyId, bool trackChanges)
+        {
+            var company = _repository.Company.GetCompany(companyId, trackChanges);
+            if (company is null)
+                throw new CompanyNotFoundException(companyId);
+
+            _repository.Company.DeleteCompany(company);
+            _repository.Save();
+        }
+
         public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
         {
             var companies = _repository.Company.GetAllCompanies(trackChanges);

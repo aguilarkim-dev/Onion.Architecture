@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
-    [Route("api/companies/{companyId}/employees")]
+    [Route("api/companies/{companyId:guid}/employees")]
     [ApiController]
     public class EmployeesController : ControllerBase
     {
@@ -50,6 +50,14 @@ namespace Presentation.Controllers
                     id = employeeToReturn.Id
                 },
                 employeeToReturn);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public IActionResult DeleteEmployeeForCompany(Guid companyId, Guid id)
+        {
+            _service.EmployeeService.DeleteEmployeeForCompany(companyId, id, trackChanges: false);
+
+            return NoContent();
         }
     }
 }
