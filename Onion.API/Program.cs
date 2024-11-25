@@ -1,6 +1,7 @@
 using CodeMaze.API.Extensions;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using NLog;
 using Presentation;
 
@@ -22,6 +23,10 @@ namespace CodeMaze.API
             builder.Services.ConfigureRepositoryManager();
             builder.Services.ConfigureServiceManager();
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true; //This options remove default invalid payload/state response from [ApiController]
+            });
             builder.Services.AddControllers(config =>
                 {
                     config.RespectBrowserAcceptHeader = true;
