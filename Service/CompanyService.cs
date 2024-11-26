@@ -6,6 +6,7 @@ using Service.Contracts.Interfaces;
 using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,6 +99,17 @@ namespace Service
 
             var companyDto = _mapper.Map<CompanyDto>(company);
             return companyDto;
+        }
+
+        public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)
+        {
+            var companyEntity = _repository.Company.GetCompany(companyId, trackChanges);
+            if (companyEntity is null)
+                throw new CompanyNotFoundException(companyId);
+
+            _mapper.Map(companyForUpdate, companyEntity);
+            _repository.Save();
+
         }
     }
 }
