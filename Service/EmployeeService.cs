@@ -68,31 +68,56 @@ namespace Service
             return employeeDto;
         }
 
-        public void DeleteEmployeeForCompany(Guid companyId, Guid id, bool trackChanges)
+        public void DeleteEmployeeForCompany(Guid companyId, Guid employeeId, bool trackChanges)
         {
             var company = _repository.Company.GetCompany(companyId, trackChanges);
             if (company is null)
                 throw new CompanyNotFoundException(companyId);
 
-            var employeeForCompany = _repository.Employee.GetEmployee(companyId, id, trackChanges);
+            var employeeForCompany = _repository.Employee.GetEmployee(companyId, employeeId, trackChanges);
             if (employeeForCompany is null)
-                throw new EmployeeNotFoundException(id);
+                throw new EmployeeNotFoundException(employeeId);
 
             _repository.Employee.DeleteEmployee(employeeForCompany);
             _repository.Save();
         }
 
-        public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges)
+        public void UpdateEmployeeForCompany(Guid companyId, Guid employeeId, EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges)
         {
             var company = _repository.Company.GetCompany(companyId, compTrackChanges);
             if (company is null)
                 throw new CompanyNotFoundException(companyId);
 
-            var employeeEntity = _repository.Employee.GetEmployee(companyId, id, empTrackChanges);
+            var employeeEntity = _repository.Employee.GetEmployee(companyId, employeeId, empTrackChanges);
             if (employeeEntity is null)
-                throw new EmployeeNotFoundException(id);
+                throw new EmployeeNotFoundException(employeeId);
 
             _mapper.Map(employeeForUpdate, employeeEntity);
+            _repository.Save();
+        }
+
+        public (EmployeeForUpdateDto employeeToPatch, Employee employeeEntity) GetEmployeeForPatch (
+            Guid companyId, 
+            Guid employeeId, 
+            bool compTrackChanges, 
+            bool empTrackChanges)
+        {
+            var company = _repository.Company.GetCompany(companyId, compTrackChanges);
+            if (company is null)
+                throw new CompanyNotFoundException(companyId);
+
+            var employeeEntity = _repository.Employee.GetEmployee(companyId, employeeId,empTrackChanges);
+            if (employeeEntity is null)
+                throw new EmployeeNotFoundException(companyId);
+
+            var employeeToPatch = _mapper.Map<EmployeeForUpdateDto>(employeeEntity);
+
+            return (employeeToPatch, employeeEntity);
+        }
+        public void SaveChangesForPatch(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)
+        {
+            _mapper.Map(employeeToPatch, employeeEntity);
+
             _repository.Save();
         }
     }
