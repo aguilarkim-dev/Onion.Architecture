@@ -2,6 +2,8 @@ using CodeMaze.API.Extensions;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using NLog;
 using Presentation;
 
@@ -31,6 +33,7 @@ namespace CodeMaze.API
                 {
                     config.RespectBrowserAcceptHeader = true;
                     config.ReturnHttpNotAcceptable = true;
+                    config.InputFormatters.Insert(0, GetJsonPatchInputFormatter()); //https://learn.microsoft.com/en-us/aspnet/core/web-api/jsonpatch?view=aspnetcore-8.0 => To not override System.Text.Json default formatter
                 })
                 .AddXmlDataContractSerializerFormatters() //Xml OutputFormatter Header => Accept: text/xml
                 .AddCustomCSVFormatter() //Custom OutputFormatter for Companies Header => Accept: text/csv
@@ -61,6 +64,21 @@ namespace CodeMaze.API
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+        {
+            return new ServiceCollection()
+                .AddLogging()
+                .AddMvc()
+                .AddNewtonsoftJson()
+                .Services
+                .BuildServiceProvider()
+                .GetRequiredService<IOptions<MvcOptions>>()
+                .Value
+                .InputFormatters
+                .OfType<NewtonsoftJsonPatchInputFormatter>()
+                .First();
         }
     }
 }

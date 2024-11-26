@@ -22,7 +22,8 @@ namespace CodeMaze.API
 
             CreateMap<EmployeeForCreationDto, Employee>();
 
-            CreateMap<EmployeeForUpdateDto, Employee>();
+            CreateMap<EmployeeForUpdateDto, Employee>()
+                .ReverseMap();
         }
     }
 }
