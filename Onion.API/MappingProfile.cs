@@ -20,6 +20,9 @@ namespace CodeMaze.API
 
             CreateMap<CompanyForCreationDto, Company>();
 
+            CreateMap<CompanyForUpdateDto, Company>()
+                .ReverseMap();
+
             CreateMap<EmployeeForCreationDto, Employee>();
 
             CreateMap<EmployeeForUpdateDto, Employee>()

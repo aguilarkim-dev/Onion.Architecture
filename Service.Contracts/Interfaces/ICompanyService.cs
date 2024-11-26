@@ -1,4 +1,5 @@
-﻿using Shared.DataTransferObjects;
+﻿using Entities.Models;
+using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,13 @@ namespace Service.Contracts.Interfaces
     public interface ICompanyService
     {
         IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges);
-        CompanyDto GetCompany(Guid companyId, bool trachChanges);
+        CompanyDto GetCompany(Guid companyId, bool trackChanges);
         CompanyDto CreateCompany(CompanyForCreationDto company);
         IEnumerable<CompanyDto> GetByIds(IEnumerable<Guid> ids, bool trackChanges);
         (IEnumerable<CompanyDto> companies, string ids) CreateCompanyCollection (IEnumerable<CompanyForCreationDto> companyCollection);
         void DeleteCompany(Guid companyId, bool trackChanges);
         void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges);
+        (CompanyForUpdateDto companyToPatch, Company companyEntity) GetCompanyForPatch(Guid companyId, bool trackChanges);
+        void SaveChangesForPatch(CompanyForUpdateDto companyToPath, Company companyEntity);
     }
 }

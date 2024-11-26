@@ -90,15 +90,33 @@ namespace Service
             return companiesToReturn;
         }
 
-        public CompanyDto GetCompany(Guid companyId, bool trachChanges)
+        public CompanyDto GetCompany(Guid companyId, bool trackChanges)
         {
-            var company = _repository.Company.GetCompany(companyId, trachChanges);
+            var company = _repository.Company.GetCompany(companyId, trackChanges);
             if (company is null)
                 throw new CompanyNotFoundException(companyId);
 
 
             var companyDto = _mapper.Map<CompanyDto>(company);
             return companyDto;
+        }
+
+        public (CompanyForUpdateDto companyToPatch, Company companyEntity) GetCompanyForPatch(Guid companyId, bool trackChanges)
+        {
+            var companyEntity = _repository.Company.GetCompany(companyId, trackChanges);
+            if (companyEntity is null)
+                throw new CompanyNotFoundException(companyId);
+
+            var companyToPatch = _mapper.Map<CompanyForUpdateDto>(companyEntity);
+
+            return (companyToPatch,  companyEntity);
+        }
+
+        public void SaveChangesForPatch(CompanyForUpdateDto companyToPath, Company companyEntity)
+        {
+            _mapper.Map(companyToPath, companyEntity);
+
+            _repository.Save();
         }
 
         public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)

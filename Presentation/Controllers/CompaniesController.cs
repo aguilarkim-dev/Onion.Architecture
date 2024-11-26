@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.ModelBinders;
 using Service.Contracts.Interfaces;
 using Shared.DataTransferObjects;
@@ -31,7 +32,7 @@ namespace Presentation.Controllers
         [HttpGet("{id:guid}", Name = "CompanyById")]
         public IActionResult GetCompany(Guid id)
         {
-            var company = _service.CompanyService.GetCompany(id, trachChanges: false);
+            var company = _service.CompanyService.GetCompany(id, trackChanges: false);
 
             return Ok(company);
         }
@@ -47,6 +48,9 @@ namespace Presentation.Controllers
         [HttpPost("collection")]
         public IActionResult CreateCompanyCollection([FromBody]IEnumerable<CompanyForCreationDto> companyCollection)
         {
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             var result = _service.CompanyService.CreateCompanyCollection(companyCollection);
 
             return CreatedAtRoute("CompanyCollection",
@@ -82,7 +86,28 @@ namespace Presentation.Controllers
             if (company is null)
                 return BadRequest("CompanyForUpdateDto object is null");
 
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
             _service.CompanyService.UpdateCompany(id, company, trackChanges: true);
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}")]
+        public IActionResult PartiallyUpdateCompany(Guid id, [FromBody] JsonPatchDocument<CompanyForUpdateDto> patchDoc)
+        {
+            if (patchDoc is null)
+                return BadRequest("patchDoc object sent from client is null.");
+
+            var result = _service.CompanyService.GetCompanyForPatch(id, trackChanges: true);
+            patchDoc.ApplyTo(result.companyToPatch, ModelState);
+
+            TryValidateModel(result.companyToPatch);
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            _service.CompanyService.SaveChangesForPatch(result.companyToPatch, result.companyEntity);
 
             return NoContent();
         }
