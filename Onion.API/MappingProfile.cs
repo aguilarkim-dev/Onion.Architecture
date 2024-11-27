@@ -9,7 +9,7 @@ namespace CodeMaze.API
         public MappingProfile()
         {
             //**Note:
-            //**Using record based dto use ForCtorParam instead of ForMember
+            //***Using record based dto use ForCtorParam instead of ForMember
             //CreateMap<Company, CompanyDto>()
             //    .ForCtorParam("FullAddress", opt => opt.MapFrom(x => string.Join(' ', x.Address, x.Country)));
             CreateMap<Company, CompanyDto>()
