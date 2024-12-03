@@ -2,6 +2,7 @@
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Repository.Extensions;
 using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
@@ -31,12 +32,15 @@ namespace Repository
         public async Task<PagedList<Company>> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
         {
             var companies = await FindAll(trackChanges)
-                .OrderBy(c => c.Name)
+                .Search(companyParameters.SearchTerm)
+                .Sort(companyParameters.OrderBy)
                 .Skip((companyParameters.PageNumber - 1) * companyParameters.PageSize)
                 .Take(companyParameters.PageSize)
                 .ToListAsync();
 
-            var count = await FindAll(trackChanges).CountAsync();
+            var count = await FindAll(trackChanges)
+                .Search(companyParameters.SearchTerm)
+                .CountAsync();
 
             return new PagedList<Company>(companies,
                count,
