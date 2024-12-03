@@ -26,6 +26,7 @@ namespace CodeMaze.API
             builder.Services.ConfigureRepositoryManager();
             builder.Services.ConfigureServiceManager();
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.RegisterActionFilters();
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true; //This options remove default invalid payload/state response from [ApiController]
@@ -39,7 +40,6 @@ namespace CodeMaze.API
                 .AddXmlDataContractSerializerFormatters() //Xml OutputFormatter Header => Accept: text/xml
                 .AddCustomCSVFormatter() //Custom OutputFormatter for Companies Header => Accept: text/csv
                 .AddApplicationPart(typeof(AssemblyReference).Assembly); //Point controllers to Presentaion project
-            builder.Services.AddScoped<ValidationFilterAttribute>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

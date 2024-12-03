@@ -5,6 +5,7 @@ using Service.Contracts.Interfaces;
 using Service;
 using Microsoft.EntityFrameworkCore;
 using Onion.API;
+using ActionFilters;
 
 namespace CodeMaze.API.Extensions
 {
@@ -17,7 +18,8 @@ namespace CodeMaze.API.Extensions
                 options.AddPolicy("CorsPolicy", builder =>
                      builder.AllowAnyOrigin()
                      .AllowAnyMethod()
-                     .AllowAnyHeader());
+                     .AllowAnyHeader()
+                     .WithExposedHeaders("X-Pagination"));
             });
         }
 
@@ -58,6 +60,11 @@ namespace CodeMaze.API.Extensions
         public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder)
         {
             return builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
+        }
+
+        public static void RegisterActionFilters(this IServiceCollection services)
+        {
+            services.AddScoped<ValidationFilterAttribute>();
         }
 
     }
