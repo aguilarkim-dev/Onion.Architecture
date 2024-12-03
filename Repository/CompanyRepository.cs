@@ -2,6 +2,7 @@
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +28,20 @@ namespace Repository
             Delete(company);
         }
 
-        public async Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges)
+        public async Task<PagedList<Company>> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
         {
-            return await FindAll(trackChanges)
+            var companies = await FindAll(trackChanges)
                 .OrderBy(c => c.Name)
+                .Skip((companyParameters.PageNumber - 1) * companyParameters.PageSize)
+                .Take(companyParameters.PageSize)
                 .ToListAsync();
+
+            var count = await FindAll(trackChanges).CountAsync();
+
+            return new PagedList<Company>(companies,
+               count,
+               companyParameters.PageNumber,
+               companyParameters.PageSize);
         }
 
         public async Task<IEnumerable<Company>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
