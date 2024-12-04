@@ -6,6 +6,7 @@ using Service;
 using Microsoft.EntityFrameworkCore;
 using Onion.API;
 using ActionFilters;
+using Service.DataShaping;
 
 namespace CodeMaze.API.Extensions
 {
@@ -65,6 +66,11 @@ namespace CodeMaze.API.Extensions
         public static void RegisterActionFilters(this IServiceCollection services)
         {
             services.AddScoped<ValidationFilterAttribute>();
+        }
+
+        public static void AddDataShaper(this IServiceCollection services)
+        {
+            services.AddScoped(typeof(IDataShaper<>), typeof(DataShaper<>));
         }
 
     }

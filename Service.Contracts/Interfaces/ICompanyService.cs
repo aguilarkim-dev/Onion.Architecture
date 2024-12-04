@@ -3,6 +3,7 @@ using Shared.DataTransferObjects;
 using Shared.RequestFeatures;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Service.Contracts.Interfaces
 {
     public interface ICompanyService
     {
-        Task<(IEnumerable<CompanyDto> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges);
+        Task<(IEnumerable<ExpandoObject> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges);
         Task<CompanyDto> GetCompanyAsync(Guid companyId, bool trackChanges);
         Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company);
         Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);

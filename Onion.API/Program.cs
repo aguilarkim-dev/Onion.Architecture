@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
 using Presentation;
+using Service.DataShaping;
 
 namespace CodeMaze.API
 {
@@ -27,6 +28,7 @@ namespace CodeMaze.API
             builder.Services.ConfigureServiceManager();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.RegisterActionFilters();
+            builder.Services.AddDataShaper();
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true; //This options remove default invalid payload/state response from [ApiController]
