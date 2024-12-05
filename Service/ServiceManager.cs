@@ -18,10 +18,11 @@ namespace Service
             , ILoggerManager logger
             , IMapper mapper
             , IDataShaper<EmployeeDto> employeeDataShaper
-            , IDataShaper<CompanyDto> companyDateShaper)
+            , IDataShaper<CompanyDto> companyDateShaper
+            , IEmployeeLinks employeeLinks)
         {
             _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper, companyDateShaper));
-            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, mapper, employeeDataShaper));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, mapper, employeeDataShaper, employeeLinks));
         }
 
 

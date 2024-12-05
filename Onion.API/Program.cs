@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
+using Onion.API.Utility;
 using Presentation;
 using Service.DataShaping;
 
@@ -42,6 +43,9 @@ namespace CodeMaze.API
                 .AddXmlDataContractSerializerFormatters() //Xml OutputFormatter Header => Accept: text/xml
                 .AddCustomCSVFormatter() //Custom OutputFormatter for Companies Header => Accept: text/csv
                 .AddApplicationPart(typeof(AssemblyReference).Assembly); //Point controllers to Presentaion project
+            builder.Services.AddCustomMediaTypes();
+            builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

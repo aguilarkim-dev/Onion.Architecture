@@ -71,7 +71,7 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-        public async Task<(IEnumerable<ExpandoObject> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
+        public async Task<(IEnumerable<ShapedEntity> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
         {
             var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(companyParameters, trackChanges);
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
