@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
+using Onion.API.Utility;
 using Presentation;
+using Service.DataShaping;
 
 namespace CodeMaze.API
 {
@@ -27,6 +29,7 @@ namespace CodeMaze.API
             builder.Services.ConfigureServiceManager();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.RegisterActionFilters();
+            builder.Services.AddDataShaper();
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true; //This options remove default invalid payload/state response from [ApiController]
@@ -40,6 +43,9 @@ namespace CodeMaze.API
                 .AddXmlDataContractSerializerFormatters() //Xml OutputFormatter Header => Accept: text/xml
                 .AddCustomCSVFormatter() //Custom OutputFormatter for Companies Header => Accept: text/csv
                 .AddApplicationPart(typeof(AssemblyReference).Assembly); //Point controllers to Presentaion project
+            builder.Services.AddCustomMediaTypes();
+            builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

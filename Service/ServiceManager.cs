@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Interfaces;
 using Service.Contracts.Interfaces;
+using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,13 @@ namespace Service
         private readonly Lazy<IEmployeeService> _employeeService;
         public ServiceManager(IRepositoryManager repositoryManager
             , ILoggerManager logger
-            , IMapper mapper)
+            , IMapper mapper
+            , IDataShaper<EmployeeDto> employeeDataShaper
+            , IDataShaper<CompanyDto> companyDateShaper
+            , IEmployeeLinks employeeLinks)
         {
-            _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper));
-            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, mapper));
+            _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, mapper, companyDateShaper));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, mapper, employeeDataShaper, employeeLinks));
         }
 
 
