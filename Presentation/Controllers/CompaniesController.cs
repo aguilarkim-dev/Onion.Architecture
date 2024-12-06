@@ -1,4 +1,5 @@
 ﻿using ActionFilters;
+using Entities.LinkModels;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ModelBinders;
@@ -25,20 +26,25 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)
         {
-            var pagedResult = await _service.CompanyService.GetAllCompaniesAsync(companyParameters, trackChanges: false);
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+            var linkParams = new LinkCompanyParameters(companyParameters, HttpContext);
+            //var pagedResult = await _service.CompanyService.GetAllCompaniesAsync(companyParameters, trackChanges: false);
+            var result = await _service.CompanyService.GetAllCompaniesAsync(linkParams, trackChanges: false);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
 
-            return Ok(pagedResult.companies);
+            return result.linkResponse.HasLinks
+                ? Ok(result.linkResponse.LinkedEntities)
+                : Ok(result.linkResponse.ShapedEntities);
         }
 
         [HttpGet("{id:guid}", Name = "CompanyById")]
-        public async Task<IActionResult> GetCompany(Guid id)
+        public async Task<IActionResult> GetCompany(Guid id, [FromQuery] CompanyParameters companyParameters)
         {
-            var company = await _service.CompanyService.GetCompanyAsync(id, trackChanges: false);
+            var company = await _service.CompanyService.GetCompanyAsync(id, companyParameters, trackChanges: false);
 
-            return Ok(company);
+            return Ok(company.Entity);
         }
 
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]

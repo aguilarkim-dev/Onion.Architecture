@@ -9,6 +9,7 @@ using ActionFilters;
 using Service.DataShaping;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc;
+using Onion.API.Utility;
 
 namespace CodeMaze.API.Extensions
 {
@@ -100,6 +101,12 @@ namespace CodeMaze.API.Extensions
                     .Add("application/vnd.codemaze.hateoas+xml");
                 }
             });
+        }
+
+        public static void UseHypermediaAsTheEngineOfApplicationState(this IServiceCollection services) //HATEOAS
+        {
+            services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+            services.AddScoped<ICompanyLinks, CompanyLinks>();
         }
 
 

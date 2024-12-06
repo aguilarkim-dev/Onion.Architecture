@@ -35,22 +35,22 @@ namespace Service
             _employeeLinks = employeeLinks;
         }
 
-        public async Task<(LinkResponse linkResponse, MetaData metaData)> GetEmployeesAsync(Guid companyId, LinkParameters linkParameters, bool trackChanges)
+        public async Task<(LinkResponse linkResponse, MetaData metaData)> GetEmployeesAsync(Guid companyId, LinkEmployeeParameters linkEmployeeParameters, bool trackChanges)
         {
             //if (!employeeParameters.ValidAgeRange())
-            if (!linkParameters.EmployeeParameters.ValidAgeRange())
+            if (!linkEmployeeParameters.EmployeeParameters.ValidAgeRange())
                 throw new MaxAgeRangeBadRequestException();
 
             await CheckIfCompanyExists(companyId, trackChanges);
 
             //var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(companyId, employeeParameters, trackChanges);
-            var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(companyId, linkParameters.EmployeeParameters, trackChanges);
+            var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(companyId, linkEmployeeParameters.EmployeeParameters, trackChanges);
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesWithMetaData);
             //var shapedData = _dataShaper.ShapeData(employeesDto, employeeParameters.Fields);
-            var links = _employeeLinks.TryGenerateLinks(employeesDto, linkParameters.EmployeeParameters.Fields, companyId, linkParameters.Context);
+            var linkResponse = _employeeLinks.TryGenerateLinks(employeesDto, linkEmployeeParameters.EmployeeParameters.Fields, companyId, linkEmployeeParameters.Context);
 
 
-            return (linkResponse: links, metaData: employeesWithMetaData.MetaData);
+            return (linkResponse: linkResponse, metaData: employeesWithMetaData.MetaData);
         }
 
         public async Task<ShapedEntity> GetEmployeeAsync(Guid companyId, Guid employeeId, EmployeeParameters employeeParameters, bool trackChanges)
