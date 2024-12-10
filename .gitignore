@@ -1,4 +1,4 @@
 **/*.vs/
 **/*bin/
 **/*obj/
-/Onion.API/appsettings.Development.json
+Onion.API/appsettings.Development.json
