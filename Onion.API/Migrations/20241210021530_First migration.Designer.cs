@@ -9,11 +9,11 @@ using Repository;
 
 #nullable disable
 
-namespace CodeMaze.API.Migrations
+namespace Onion.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241121015022_Test")]
-    partial class Test
+    [Migration("20241210021530_First migration")]
+    partial class Firstmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

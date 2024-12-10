@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.Interfaces;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Entities.Models;
 using Service.Contracts.Interfaces;
 using Shared.DataTransferObjects;
@@ -20,7 +21,6 @@ namespace Service
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        private readonly IDataShaper<CompanyDto> _dataShaper;
         public CompanyService(IRepositoryManager repository
             , ILoggerManager logger
             , IMapper mapper
@@ -29,7 +29,6 @@ namespace Service
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-            _dataShaper = dataShaper;
         }
 
         public async Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company)
@@ -71,13 +70,13 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-        public async Task<(IEnumerable<ShapedEntity> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
+        public async Task<(IEnumerable<CompanyDto> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
         {
             var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(companyParameters, trackChanges);
-            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
-            var shapedDate = _dataShaper.ShapeData(companiesDto, companyParameters.Fields);
 
-            return (companies: shapedDate, metaData: companiesWithMetaData.MetaData);
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
+
+            return (companies: companiesDto, metaData: companiesWithMetaData.MetaData);
         }
 
         public async Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
@@ -95,11 +94,12 @@ namespace Service
             return companiesToReturn;
         }
 
-        public async Task<CompanyDto> GetCompanyAsync(Guid companyId, bool trackChanges)
+        public async Task<CompanyDto> GetCompanyAsync(Guid companyId, CompanyParameters companyParameters, bool trackChanges)
         {
             var company = await GetCompanyAndCheckIfItExists(companyId, trackChanges);
 
             var companyDto = _mapper.Map<CompanyDto>(company);
+
             return companyDto;
         }
 

@@ -13,7 +13,7 @@ namespace Service.Contracts.Interfaces
 {
     public interface IEmployeeService
     {
-        Task<(LinkResponse linkResponse, MetaData metaData)> GetEmployeesAsync(Guid companyId, LinkParameters linkParameters, bool trackChanges);
+        Task<(LinkResponse linkResponse, MetaData metaData)> GetEmployeesAsync(Guid companyId, LinkEmployeeParameters linkEmployeeParameters, bool trackChanges);
         Task<ShapedEntity> GetEmployeeAsync(Guid companyId, Guid employeeId, EmployeeParameters employeeParameters, bool trackChanges);
         Task<EmployeeDto> CreateEmployeeForCompanyAsync(Guid companyId, EmployeeForCreationDto employeeForCreation, bool trackChanges);
         Task DeleteEmployeeForCompanyAsync(Guid companyId, Guid employeeId, bool trackChanges);

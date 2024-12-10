@@ -44,7 +44,8 @@ namespace CodeMaze.API
                 .AddCustomCSVFormatter() //Custom OutputFormatter for Companies Header => Accept: text/csv
                 .AddApplicationPart(typeof(AssemblyReference).Assembly); //Point controllers to Presentaion project
             builder.Services.AddCustomMediaTypes();
-            builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+            builder.Services.UseHypermediaAsTheEngineOfApplicationState();
+            builder.Services.ConfigureVersioning();
 
             var app = builder.Build();
 
