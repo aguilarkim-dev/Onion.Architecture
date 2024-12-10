@@ -13,8 +13,8 @@ namespace Service.Contracts.Interfaces
 {
     public interface ICompanyService
     {
-        Task<(LinkResponse linkResponse, MetaData metaData)> GetAllCompaniesAsync(LinkCompanyParameters linkCompanyParameters, bool trackChanges);
-        Task<ShapedEntity> GetCompanyAsync(Guid companyId, CompanyParameters companyParameters, bool trackChanges);
+        Task<(IEnumerable<CompanyDto> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges);
+        Task<CompanyDto> GetCompanyAsync(Guid companyId, CompanyParameters companyParameters, bool trackChanges);
         Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company);
         Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);
         Task<(IEnumerable<CompanyDto> companies, string ids)> CreateCompanyCollectionAsync (IEnumerable<CompanyForCreationDto> companyCollection);

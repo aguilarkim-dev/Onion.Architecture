@@ -45,6 +45,7 @@ namespace CodeMaze.API
                 .AddApplicationPart(typeof(AssemblyReference).Assembly); //Point controllers to Presentaion project
             builder.Services.AddCustomMediaTypes();
             builder.Services.UseHypermediaAsTheEngineOfApplicationState();
+            builder.Services.ConfigureVersioning();
 
             var app = builder.Build();
 

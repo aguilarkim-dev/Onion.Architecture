@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
-    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Route("api/{v:apiversion}/companies")]
     [ApiController]
-    public class CompaniesController : ControllerBase
+    public class CompaniesControllerV2 : ControllerBase
     {
         private readonly IServiceManager _service;
-        public CompaniesController(IServiceManager service)
+        public CompaniesControllerV2(IServiceManager service)
         {
             _service = service;
         }

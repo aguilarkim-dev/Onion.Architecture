@@ -21,19 +21,14 @@ namespace Service
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        private readonly IDataShaper<CompanyDto> _dataShaper;
-        private readonly ICompanyLinks _companyLinks;
         public CompanyService(IRepositoryManager repository
             , ILoggerManager logger
             , IMapper mapper
-            , IDataShaper<CompanyDto> dataShaper
-            , ICompanyLinks companyLinks)
+            , IDataShaper<CompanyDto> dataShaper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-            _dataShaper = dataShaper;
-            _companyLinks = companyLinks;
         }
 
         public async Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company)
@@ -75,14 +70,13 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-        public async Task<(LinkResponse linkResponse, MetaData metaData)> GetAllCompaniesAsync(LinkCompanyParameters LinkCompanyParameters, bool trackChanges)
+        public async Task<(IEnumerable<CompanyDto> companies, MetaData metaData)> GetAllCompaniesAsync(CompanyParameters companyParameters, bool trackChanges)
         {
-            var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(LinkCompanyParameters.CompanyParameters, trackChanges);
-            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
-            //var shapedDate = _dataShaper.ShapeData(companiesDto, companyParameters.Fields);
-            var linkResponse = _companyLinks.TryGenerateLinks(companiesDto, LinkCompanyParameters.CompanyParameters.Fields, LinkCompanyParameters.Context);
+            var companiesWithMetaData = await _repository.Company.GetAllCompaniesAsync(companyParameters, trackChanges);
 
-            return (linkResponse: linkResponse, metaData: companiesWithMetaData.MetaData);
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companiesWithMetaData);
+
+            return (companies: companiesDto, metaData: companiesWithMetaData.MetaData);
         }
 
         public async Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
@@ -100,14 +94,13 @@ namespace Service
             return companiesToReturn;
         }
 
-        public async Task<ShapedEntity> GetCompanyAsync(Guid companyId, CompanyParameters companyParameters, bool trackChanges)
+        public async Task<CompanyDto> GetCompanyAsync(Guid companyId, CompanyParameters companyParameters, bool trackChanges)
         {
             var company = await GetCompanyAndCheckIfItExists(companyId, trackChanges);
 
             var companyDto = _mapper.Map<CompanyDto>(company);
-            var shapedData = _dataShaper.ShapeData(companyDto, companyParameters.Fields);
 
-            return shapedData;
+            return companyDto;
         }
 
         public async Task<(CompanyForUpdateDto companyToPatch, Company companyEntity)>

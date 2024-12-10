@@ -87,8 +87,8 @@ namespace CodeMaze.API.Extensions
 
                 if (systemTextJsonOutputFormatter != null)
                 {
-                    systemTextJsonOutputFormatter.SupportedMediaTypes
-                    .Add("application/vnd.codemaze.hateoas+json");
+                    systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.onionapi.hateoas+json");
+                    systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.onionapi.apiroot+json");
                 }
 
                 var xmlOutputFormatter = config.OutputFormatters
@@ -97,8 +97,8 @@ namespace CodeMaze.API.Extensions
 
                 if (xmlOutputFormatter != null)
                 {
-                    xmlOutputFormatter.SupportedMediaTypes
-                    .Add("application/vnd.codemaze.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.onionapi.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.onionapi.apiroot+xml");
                 }
             });
         }
@@ -106,7 +106,16 @@ namespace CodeMaze.API.Extensions
         public static void UseHypermediaAsTheEngineOfApplicationState(this IServiceCollection services) //HATEOAS
         {
             services.AddScoped<IEmployeeLinks, EmployeeLinks>();
-            services.AddScoped<ICompanyLinks, CompanyLinks>();
+        }
+
+        public static void ConfigureVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(opt =>
+            {
+                opt.ReportApiVersions = true;
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+            });
         }
 
 

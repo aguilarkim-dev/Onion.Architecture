@@ -8,7 +8,7 @@ using Repository;
 
 #nullable disable
 
-namespace CodeMaze.API.Migrations
+namespace Onion.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
     partial class RepositoryContextModelSnapshot : ModelSnapshot
