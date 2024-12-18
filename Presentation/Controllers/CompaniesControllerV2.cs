@@ -15,8 +15,8 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
-    [ApiVersion("2.0")]
-    [Route("api/{v:apiversion}/companies")]
+    [ApiVersion("2.0", Deprecated = true)]
+    [Route("api/companies")]
     [ApiController]
     public class CompaniesControllerV2 : ControllerBase
     {

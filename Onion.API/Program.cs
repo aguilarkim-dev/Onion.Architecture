@@ -1,4 +1,5 @@
 using ActionFilters;
+using AspNetCoreRateLimit;
 using CodeMaze.API.Extensions;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -39,6 +40,7 @@ namespace CodeMaze.API
                     config.RespectBrowserAcceptHeader = true;
                     config.ReturnHttpNotAcceptable = true;
                     config.InputFormatters.Insert(0, GetJsonPatchInputFormatter()); //https://learn.microsoft.com/en-us/aspnet/core/web-api/jsonpatch?view=aspnetcore-8.0 => To not override System.Text.Json default formatter
+                    config.CacheProfiles.Add("120SecondsDuration", new CacheProfile { Duration = 120 });
                 })
                 .AddXmlDataContractSerializerFormatters() //Xml OutputFormatter Header => Accept: text/xml
                 .AddCustomCSVFormatter() //Custom OutputFormatter for Companies Header => Accept: text/csv
@@ -46,6 +48,11 @@ namespace CodeMaze.API
             builder.Services.AddCustomMediaTypes();
             builder.Services.UseHypermediaAsTheEngineOfApplicationState();
             builder.Services.ConfigureVersioning();
+            builder.Services.ConfigureResponseCaching();
+            builder.Services.ConfigureHttpCacheHeaders();
+            builder.Services.AddMemoryCache();
+            builder.Services.ConfigureRateLimitingOptions();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 
@@ -65,7 +72,11 @@ namespace CodeMaze.API
             {
                 ForwardedHeaders = ForwardedHeaders.All
             });
+
+            app.UseIpRateLimiting();
             app.UseCors("CorsPolicy");
+            app.UseResponseCaching();
+            app.UseHttpCacheHeaders();
 
             app.UseAuthorization();
 
