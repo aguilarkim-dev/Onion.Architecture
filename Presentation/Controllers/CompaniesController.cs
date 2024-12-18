@@ -1,5 +1,6 @@
 ﻿using ActionFilters;
 using Entities.LinkModels;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ModelBinders;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 namespace Presentation.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/{v:apiversion}/companies")]
+    [Route("api/companies")]
     [ApiController]
     public class CompaniesController : ControllerBase
     {
@@ -40,6 +41,9 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id:guid}", Name = "CompanyById")]
+        //[ResponseCache(CacheProfileName = "120SecondsDuration")]
+        [HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 60)]
+        [HttpCacheValidation(MustRevalidate = false)]
         public async Task<IActionResult> GetCompany(Guid id, [FromQuery] CompanyParameters companyParameters)
         {
             var company = await _service.CompanyService.GetCompanyAsync(id, companyParameters, trackChanges: false);
